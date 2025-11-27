@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<style>
+    .home-container {
+        text-align: center;
+        margin-top: 80px;
+    }
+
+    .home-title {
+        font-size: 42px;
+        color: #0b6b34;
+        margin-bottom: 10px;
+    }
+
+    .home-sub {
+        margin-top: 10px;
+        font-size: 18px;
+        color: #444;
+    }
+
+    .btn-custom {
+        display: inline-block;
+        padding: 12px 28px;
+        margin: 10px;
+        background: #0b6b34;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 16px;
+    }
+
+        .btn-custom:hover {
+            background: #095828;
+        }
+
+    .btn-outline {
+        display: inline-block;
+        padding: 12px 28px;
+        margin: 10px;
+        border: 2px solid #0b6b34;
+        color: #0b6b34;
+        border-radius: 6px;
+        font-size: 16px;
+        text-decoration: none;
+    }
+
+        .btn-outline:hover {
+            background: #0b6b34;
+            color: white;
+        }
+</style>
+
+<div class="home-container">
+    <h1 class="home-title">Online Voting System</h1>
+    <p class="home-sub">A secure and simple way to participate in elections.</p>
+
+    <a class="btn-custom" asp-controller="Users" asp-action="Login">Login</a>
+    <a class="btn-outline" asp-controller="Users" asp-action="Register">Register</a>
+</div>

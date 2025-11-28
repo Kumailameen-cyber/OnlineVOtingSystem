@@ -1,0 +1,135 @@
+﻿@model VOtingSystemdraft.Models.User
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    /* This creates the Green/Teal Gradient Background */
+    .glass-container {
+        /* Fallback for old browsers */
+        background: #1d976c;
+        /* The gradient from the image */
+        background: -webkit-linear-gradient(to right, #93f9b9, #1d976c);
+        background: linear-gradient(to right, #93f9b9, #1d976c);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .login-glass-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 40px;
+        border-radius: 15px;
+        /* THE GLASS EFFECT */
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        text-align: center;
+        color: white;
+    }
+
+        .login-glass-card h2 {
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            font-size: 24px;
+        }
+
+    /* Input Fields */
+    .form-control {
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 12px;
+        height: 45px;
+        color: #333;
+        margin-bottom: 15px;
+        width: 70%;
+        
+    }
+
+        .form-control:focus {
+            background: #fff;
+            box-shadow: none;
+        }
+
+    /* Labels - hiding them visually to match image, but keeping placeholders */
+    .control-label {
+        display: none;
+    }
+
+    /* The Dark "SIGN IN" Button */
+    .btn-glass {
+        background-color: #2c3e50; /* Dark Navy/Black */
+        color: white;
+        border-radius: 25px; /* Pill shape */
+        padding: 12px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        transition: 0.3s;
+        border: none;
+        margin-top: 10px;
+    }
+
+        .btn-glass:hover {
+            background-color: #1a252f;
+            color: #fff;
+        }
+
+    .bottom-link {
+        margin-top: 20px;
+        font-size: 14px;
+    }
+
+        .bottom-link a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .bottom-link a:hover {
+                text-decoration: underline;
+            }
+</style>
+
+<div class="glass-container">
+    <div class="login-glass-card">
+        <h2>Login</h2>
+
+        <form asp-action="Login">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" placeholder="Email" />
+                <span asp-validation-for="Email" class="text-warning" style="font-size: 12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
+                <span asp-validation-for="Password" class="text-warning" style="font-size: 12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="SIGN IN" class="btn btn-glass w-100" />
+            </div>
+        </form>
+
+        <div class="bottom-link">
+            <a asp-action="Register">Forgot Password? / Register</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -152,5 +152,56 @@ namespace VOtingSystemdraft.Controllers
         {
             return _context.Users.Any(e => e.Id == id);
         }
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        // POST: Users/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        // 1. Remove "Role" from the Bind list below so the user cannot fake it
+        public async Task<IActionResult> Register([Bind("Id,Username,Password,Email")] User user)
+        {
+            if (ModelState.IsValid)
+            {
+                // 2. Force the role to be "Voter" automatically
+                user.Role = "Voter";
+
+                _context.Add(user);
+                await _context.SaveChangesAsync();
+                // 3. Redirect to Login page after successful registration
+                return RedirectToAction("Login", "Users");
+            }
+            return View(user);
+        }
+
+        // GET: Users/Login
+        // This runs when you click the link to open the page
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: Users/Login
+        // This runs when you click the "Login" button inside the form
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+
+            if (user != null)
+            {
+                // Login success!
+                // Note: Later you will want to add "Session" or "Cookies" here to keep them logged in.
+                return RedirectToAction("Dashboard", "Home");
+            }
+
+            // Login failed
+            ModelState.AddModelError("", "Invalid email or password");
+            return View();
+        }
     }
 }

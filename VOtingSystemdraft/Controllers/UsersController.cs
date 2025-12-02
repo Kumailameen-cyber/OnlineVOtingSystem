@@ -181,8 +181,6 @@ namespace VOtingSystemdraft.Controllers
             return View();
         }
 
-        // POST: Users/Login
-        // This runs when you click the "Login" button inside the form
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password)
@@ -192,29 +190,28 @@ namespace VOtingSystemdraft.Controllers
 
             if (user != null)
             {
-                // Store user info in Session
+                // Set session
                 HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetString("Role", user.Role);
+                HttpContext.Session.SetString("Role", user.Role); // optional if you need role later
 
-                // Redirect to Dashboard (we will fix this logic next)
-                if (user.Role == "Admin")
-                {
-                    return RedirectToAction("AdminDashboard", "Admins");
-                }
-                else if (user.Role == "Candidate")
-                {
-                    return RedirectToAction("CandidateDashboard", "Candidates");
-                }
-                else
-                {
+                // Redirect based on role
+                if (user.Role == "Voter")
                     return RedirectToAction("VoterDashboard", "Voters");
-                }
+                else if (user.Role == "Admin")
+                    return RedirectToAction("AdminDashboard", "Admins");
+                else if (user.Role == "Candidate")
+                    return RedirectToAction("CandidateDashboard", "Candidates");
             }
 
-            // Login failed
             ModelState.AddModelError("", "Invalid email or password");
             return View();
         }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear(); // Clears all session data (UserId, Role, etc.)
+            return RedirectToAction("Login", "Users"); // Redirects to login page
+        }
+
     }
 }

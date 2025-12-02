@@ -161,19 +161,59 @@ namespace VOtingSystemdraft.Controllers
         }
         public IActionResult CandidateDashboard()
         {
-            var role = HttpContext.Session.GetString("Role");
-            if (role == null)
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Users");
             }
-            if (role == "Candidate")
+
+            // Fetch candidate info for this user
+            var candidate = _context.Candidates.FirstOrDefault(c => c.Id == userId);
+
+            return View(candidate);  // pass model to the view
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateCandidateInfo(int UserId, string PartyName, string Symbol, string Bio)
+        {
+            if (UserId == 0 || string.IsNullOrEmpty(PartyName))
             {
-                return View("CandidateDashboard");
+                return BadRequest("Invalid data");
+            }
+
+            // Check if candidate already exists for this user
+            var candidate = await _context.Candidates.FindAsync(UserId);
+
+            if (candidate == null)
+            {
+                // If not exists, create new candidate
+                candidate = new Candidate
+                {
+                    Id = UserId,
+                    PartyName = PartyName,
+                    Symbol = Symbol,
+                    Bio = Bio
+                };
+
+                _context.Candidates.Add(candidate);
             }
             else
             {
-                return RedirectToAction("index", "Home");
+                // If exists, update existing candidate info
+                candidate.PartyName = PartyName;
+                candidate.Symbol = Symbol;
+                candidate.Bio = Bio;
+
+                _context.Candidates.Update(candidate);
             }
+
+            await _context.SaveChangesAsync();
+
+            // Redirect to the Candidate Dashboard (now model exists, so normal dashboard shows)
+            return RedirectToAction("CandidateDashboard", "Candidates");
         }
+
     }
 }

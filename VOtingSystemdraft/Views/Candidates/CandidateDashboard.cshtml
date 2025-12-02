@@ -1,4 +1,5 @@
-﻿@{
+﻿@model VOtingSystemdraft.Models.Candidate
+@{
     ViewData["Title"] = "Candidate Dashboard";
 }
 
@@ -61,38 +62,87 @@
         .logout-button a {
             width: 200px;
         }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
 </style>
 
-<div class="dashboard-container">
-    <h1>Candidate Dashboard</h1>
+@if (Model == null || string.IsNullOrEmpty(Model.PartyName))
+{
+    <!-- Show the form to enter candidate info -->
+    <div class="dashboard-container">
+        <h1>Complete Your Candidate Profile</h1>
+        <form asp-controller="Candidates" asp-action="UpdateCandidateInfo" method="post">
+            <input type="hidden" name="UserId" value="@Context.Session.GetInt32("UserId")" />
 
-    <div class="dashboard-buttons">
-        <a asp-controller="Candidates" asp-action="Edit" asp-route-id="@Context.Session.GetInt32("UserId")" class="dashboard-button-style">
-            Update My Profile
-        </a>
+            <div class="form-group">
+                <label>Party Name:</label>
+                <input type="text" name="PartyName" class="form-control" required />
+            </div>
 
-        <a asp-controller="Votes" asp-action="MyVotes" class="dashboard-button-style">
-            View My Voting Stats
-        </a>
+            <div class="form-group">
+                <label>Symbol:</label>
+                <input type="text" name="Symbol" class="form-control" />
+            </div>
 
-        <a asp-controller="Candidates" asp-action="PartyInfo" class="dashboard-button-style">
-            Party Info
-        </a>
+            <div class="form-group">
+                <label>Bio:</label>
+                <input type="text" name="Bio" class="form-control" />
+            </div>
 
-        <a asp-controller="Candidates" asp-action="ManageCampaign" class="dashboard-button-style">
-            Manage Campaign
-        </a>
-
-        <a asp-controller="Home" asp-action="ElectionInfo" class="dashboard-button-style">
-            Election Guidelines
-        </a>
-
-        <a asp-controller="Home" asp-action="Announcements" class="dashboard-button-style">
-            Announcements
-        </a>
+            <button type="submit" class="btn btn-success mt-3">Save Information</button>
+        </form>
     </div>
+}
+else
+{
+    <!-- Show the normal candidate dashboard -->
+    <div class="dashboard-container">
+        <h1>Candidate Dashboard</h1>
 
-    <div class="logout-button">
-        <a asp-controller="Users" asp-action="Logout" class="dashboard-button-style">Logout</a>
+        <div class="dashboard-buttons">
+            <a asp-controller="Candidates" asp-action="Edit" asp-route-id="@Model.Id" class="dashboard-button-style">
+                Update My Profile
+            </a>
+
+            <a asp-controller="Votes" asp-action="MyVotes" class="dashboard-button-style">
+                View My Voting Stats
+            </a>
+
+            <a asp-controller="Candidates" asp-action="PartyInfo" class="dashboard-button-style">
+                Party Info
+            </a>
+
+            <a asp-controller="Candidates" asp-action="ManageCampaign" class="dashboard-button-style">
+                Manage Campaign
+            </a>
+
+            <a asp-controller="Home" asp-action="ElectionInfo" class="dashboard-button-style">
+                Election Guidelines
+            </a>
+
+            <a asp-controller="Home" asp-action="Announcements" class="dashboard-button-style">
+                Announcements
+            </a>
+        </div>
+
+        <div class="logout-button">
+            <a asp-controller="Users" asp-action="Logout" class="dashboard-button-style">Logout</a>
+        </div>
     </div>
-</div>
+}

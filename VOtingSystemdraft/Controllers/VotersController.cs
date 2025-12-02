@@ -161,12 +161,44 @@ namespace VOtingSystemdraft.Controllers
         }
         public IActionResult VoterDashboard()
         {
-            var role = HttpContext.Session.GetString("Role");
-            if (role == null || role != "Voter")
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Users");
             }
-            return View();
+
+            var voter = _context.Voters.FirstOrDefault(v => v.Id == userId);
+            return View(voter);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateVoterInfo(int UserId, string NationalId, string Address)
+        {
+            var voter = await _context.Voters.FirstOrDefaultAsync(v => v.Id == UserId);
+
+            if (voter == null)
+            {
+                voter = new Voter
+                {
+                    Id = UserId,
+                    NationalId = NationalId,
+                    Address = Address
+                };
+                _context.Add(voter);
+            }
+            else
+            {
+                voter.NationalId = NationalId;
+                voter.Address = Address;
+                _context.Update(voter);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("VoterDashboard", "Voters");
+        }
+
     }
 }

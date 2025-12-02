@@ -159,5 +159,14 @@ namespace VOtingSystemdraft.Controllers
         {
             return _context.Admins.Any(e => e.Id == id);
         }
+        public IActionResult AdminDashboard()
+        {
+            var role = HttpContext.Session.GetString("Role");
+            if (role != "Admin")
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            return View();
+        }
     }
 }

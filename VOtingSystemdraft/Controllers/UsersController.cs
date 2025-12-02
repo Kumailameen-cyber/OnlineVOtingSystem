@@ -161,12 +161,10 @@ namespace VOtingSystemdraft.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         // 1. Remove "Role" from the Bind list below so the user cannot fake it
-        public async Task<IActionResult> Register([Bind("Id,Username,Password,Email")] User user)
+        public async Task<IActionResult> Register([Bind("Id,Username,Password,Email,Role")] User user)
         {
             if (ModelState.IsValid)
             {
-                // 2. Force the role to be "Voter" automatically
-                user.Role = "Voter";
 
                 _context.Add(user);
                 await _context.SaveChangesAsync();
@@ -194,9 +192,24 @@ namespace VOtingSystemdraft.Controllers
 
             if (user != null)
             {
-                // Login success!
-                // Note: Later you will want to add "Session" or "Cookies" here to keep them logged in.
-                return RedirectToAction("Dashboard", "Home");
+                // Store user info in Session
+                HttpContext.Session.SetInt32("UserId", user.Id);
+                HttpContext.Session.SetString("Username", user.Username);
+                HttpContext.Session.SetString("Role", user.Role);
+
+                // Redirect to Dashboard (we will fix this logic next)
+                if (user.Role == "Admin")
+                {
+                    return RedirectToAction("AdminDashboard", "Admins");
+                }
+                else if (user.Role == "Candidate")
+                {
+                    return RedirectToAction("CandidateDashboard", "Candidates");
+                }
+                else
+                {
+                    return RedirectToAction("VoterDashboard", "Voters");
+                }
             }
 
             // Login failed

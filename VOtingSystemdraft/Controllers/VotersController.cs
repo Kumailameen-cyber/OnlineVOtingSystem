@@ -159,5 +159,14 @@ namespace VOtingSystemdraft.Controllers
         {
             return _context.Voters.Any(e => e.Id == id);
         }
+        public IActionResult VoterDashboard()
+        {
+            var role = HttpContext.Session.GetString("Role");
+            if (role == null || role != "Voter")
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            return View();
+        }
     }
 }

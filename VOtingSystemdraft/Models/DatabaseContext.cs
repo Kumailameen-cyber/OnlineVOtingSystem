@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using VOtingSystemdraft.Models;
 
 namespace VOtingSystemdraft.Models
 {
@@ -13,6 +14,7 @@ namespace VOtingSystemdraft.Models
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Voter> Voters { get; set; }
         public DbSet<Candidate> Candidates { get; set; }
+        public DbSet<Announcement> Announcements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,5 +44,6 @@ namespace VOtingSystemdraft.Models
                 .WithOne()
                 .HasForeignKey<Candidate>(c => c.Id);
         }
+       
     }
 }

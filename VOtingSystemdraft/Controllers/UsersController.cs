@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using VOtingSystemdraft.Models;
+using VOtingSystemdraft.Models.ViewModels;
 
 namespace VOtingSystemdraft.Controllers
 {
@@ -18,200 +19,167 @@ namespace VOtingSystemdraft.Controllers
             _context = context;
         }
 
-        // GET: Users
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Users.ToListAsync());
-        }
-
-        // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-
-        // GET: Users/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Username,Password,Email,Role")] User user)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(user);
-        }
-
-        // GET: Users/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return View(user);
-        }
-
-        // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Username,Password,Email,Role")] User user)
-        {
-            if (id != user.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(user);
-        }
-
-        // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-
-        // POST: Users/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
-            {
-                _context.Users.Remove(user);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
+        // GET: /Users/Register
+        [HttpGet]
         public IActionResult Register()
         {
-            return View();
+            return View(new RegisterViewModel());
         }
 
-        // POST: Users/Register
+        // POST: /Users/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // 1. Remove "Role" from the Bind list below so the user cannot fake it
-        public async Task<IActionResult> Register([Bind("Id,Username,Password,Email,Role")] User user)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
-            {
+            // 1. Basic model validation for common fields (Username, Email, Password, Role)
+            if (!ModelState.IsValid)
+                return View(model);
 
-                _context.Add(user);
+            // 2. Uniqueness check
+            bool exists = await _context.Users.AnyAsync(u => u.Email == model.Email || u.Username == model.Username);
+            if (exists)
+            {
+                ModelState.AddModelError("", "Username or Email already exists.");
+                return View(model);
+            }
+
+            // 3. Conditional validation: only enforce Voter fields if Role == "Voter", etc.
+            if (string.IsNullOrWhiteSpace(model.Role))
+            {
+                ModelState.AddModelError("Role", "Please select a role.");
+            }
+            else if (model.Role == "Voter")
+            {
+                if (string.IsNullOrWhiteSpace(model.VoterNationalId))
+                    ModelState.AddModelError("VoterNationalId", "National ID is required for voters.");
+                if (string.IsNullOrWhiteSpace(model.VoterAddress))
+                    ModelState.AddModelError("VoterAddress", "Address is required for voters.");
+            }
+            else if (model.Role == "Candidate")
+            {
+                if (string.IsNullOrWhiteSpace(model.CandidatePartyName))
+                    ModelState.AddModelError("CandidatePartyName", "Party name is required for candidates.");
+                if (string.IsNullOrWhiteSpace(model.CandidateSymbol))
+                    ModelState.AddModelError("CandidateSymbol", "Symbol is required for candidates.");
+            }
+            else if (model.Role != "Admin")
+            {
+                ModelState.AddModelError("Role", "Invalid role selected.");
+            }
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            // 4. Create user and hash password
+            var user = new User
+            {
+                Username = model.Username.Trim(),
+                Email = model.Email.Trim(),
+                Role = model.Role
+            };
+
+            var hasher = new PasswordHasher<User>();
+            user.Password = hasher.HashPassword(user, model.Password);
+
+            try
+            {
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync(); // user.Id generated
+
+                // 5. Save role-specific data using shared PK
+                if (model.Role == "Voter")
+                {
+                    var voter = new Voter
+                    {
+                        Id = user.Id,
+                        NationalId = model.VoterNationalId?.Trim(),
+                        Address = model.VoterAddress?.Trim(),
+                        User = user
+                    };
+                    _context.Voters.Add(voter);
+                }
+                else if (model.Role == "Candidate")
+                {
+                    var candidate = new Candidate
+                    {
+                        Id = user.Id,
+                        PartyName = model.CandidatePartyName?.Trim(),
+                        Symbol = model.CandidateSymbol?.Trim(),
+                        Bio = model.CandidateBio?.Trim(),
+                        User = user
+                    };
+                    _context.Candidates.Add(candidate);
+                }
+                else // Admin
+                {
+                    _context.Admins.Add(new Admin { Id = user.Id, User = user });
+                }
+
                 await _context.SaveChangesAsync();
-                // 3. Redirect to Login page after successful registration
+
+                // 6. Redirect to Login page (user will sign in using their email and password)
+                TempData["Success"] = "Account created successfully. Please log in.";
                 return RedirectToAction("Login", "Users");
             }
-            return View(user);
+            catch (Exception ex)
+            {
+                // log or inspect ex in Visual Studio Output; return a friendly message
+                Console.WriteLine(ex);
+                ModelState.AddModelError("", "An error occurred while creating your account. Please try again.");
+                return View(model);
+            }
         }
 
-        // GET: Users/Login
-        // This runs when you click the link to open the page
+        // GET: /Users/Login
+        [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
+        // POST: /Users/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
-
-            if (user != null)
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
-                // Set session
-                HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("Role", user.Role); // optional if you need role later
-
-                // Redirect based on role
-                if (user.Role == "Voter")
-                    return RedirectToAction("VoterDashboard", "Voters");
-                else if (user.Role == "Admin")
-                    return RedirectToAction("AdminDashboard", "Admins");
-                else if (user.Role == "Candidate")
-                    return RedirectToAction("CandidateDashboard", "Candidates");
+                ModelState.AddModelError("", "Email and password are required.");
+                return View();
             }
 
-            ModelState.AddModelError("", "Invalid email or password");
-            return View();
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email.Trim());
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Invalid email or password.");
+                return View();
+            }
+
+            var hasher = new PasswordHasher<User>();
+            var result = hasher.VerifyHashedPassword(user, user.Password, password);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                ModelState.AddModelError("", "Invalid email or password.");
+                return View();
+            }
+
+            // Set session
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("Role", user.Role);
+
+            // Redirect based on role (adjust controller/action names to match your project)
+            if (user.Role == "Voter") return RedirectToAction("VoterDashboard", "Voters");
+            if (user.Role == "Admin") return RedirectToAction("AdminDashboard", "Admins");
+            if (user.Role == "Candidate") return RedirectToAction("CandidateDashboard", "Candidates");
+
+            return RedirectToAction("Index", "Home");
         }
 
+        // Logout
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear(); // Clears all session data (UserId, Role, etc.)
-            return RedirectToAction("Login", "Users"); // Redirects to login page
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Users");
         }
-
     }
 }

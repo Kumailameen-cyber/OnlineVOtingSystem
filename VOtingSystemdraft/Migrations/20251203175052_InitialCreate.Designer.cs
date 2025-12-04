@@ -11,8 +11,8 @@ using VOtingSystemdraft.Models;
 namespace VOtingSystemdraft.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20251128164906_intialvoting")]
-    partial class intialvoting
+    [Migration("20251203175052_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

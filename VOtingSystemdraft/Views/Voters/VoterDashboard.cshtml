@@ -2,6 +2,46 @@
 @{
     ViewData["Title"] = "Voter Dashboard";
 }
+
+<!-- 🔹 NAVBAR (Home + Logout) -->
+<nav style="
+    width: 100%;
+    padding: 15px 20px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+">
+    <a asp-controller="Voters" asp-action="VoterDashboard"
+       style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">
+        Home
+    </a>
+
+    <a asp-controller="Users" asp-action="Login"
+       style="color: #ff7675; font-weight: bold; text-decoration: none;">
+        Logout
+    </a>
+</nav>
+
+    <!-- Show the normal voter dashboard -->
+    <div class="dashboard-container">
+        <h1>Voter Dashboard</h1>
+
+        <div class="dashboard-buttons">
+            <a asp-controller="Votes" asp-action="Vote" class="dashboard-button-style">Cast Vote</a>
+            <a asp-controller="Candidates" asp-action="Index" class="dashboard-button-style">View Candidates</a>
+            <a asp-controller="Votes" asp-action="MyVotes" class="dashboard-button-style">My Voting History</a>
+            <a asp-controller="Home" asp-action="ElectionInfo" class="dashboard-button-style">Election Guidelines</a>
+            <a asp-controller="Users" asp-action="Profile" class="dashboard-button-style">Voter Profile</a>
+            <a asp-controller="Home" asp-action="Announcements" class="dashboard-button-style">Announcements</a>
+        </div>
+
+      
+    </div>
+
+
 <style>
     body {
         background-color: #f5f5f5;
@@ -53,56 +93,3 @@
         }
 
     .logout-button {
-        margin-top: 30px;
-        display: flex;
-        justify-content: center;
-    }
-
-        .logout-button a {
-            width: 200px;
-        }
-</style>
-
-@if (Model == null || string.IsNullOrEmpty(Model.NationalId)
-    || string.IsNullOrEmpty(Model.Address))
-{
-    <!-- Show the form to enter voter info -->
-    <div class="dashboard-container">
-        <h1>Complete Your Voter Information</h1>
-        <form asp-controller="Voters" asp-action="UpdateVoterInfo" method="post">
-            <input type="hidden" name="UserId" value="@Context.Session.GetInt32("UserId")" />
-
-            <div class="form-group">
-                <label>National ID:</label>
-                <input type="text" name="NationalId" class="form-control" required />
-            </div>
-
-            <div class="form-group">
-                <label>Address:</label>
-                <input type="text" name="Address" class="form-control" required />
-            </div>
-
-            <button type="submit" class="btn btn-success mt-3">Save Information</button>
-        </form>
-    </div>
-}
-else
-{
-    <!-- Show the normal voter dashboard -->
-    <div class="dashboard-container">
-        <h1>Voter Dashboard</h1>
-
-        <div class="dashboard-buttons">
-            <a asp-controller="Votes" asp-action="Vote" class="dashboard-button-style">Cast Vote</a>
-            <a asp-controller="Candidates" asp-action="Index" class="dashboard-button-style">View Candidates</a>
-            <a asp-controller="Votes" asp-action="MyVotes" class="dashboard-button-style">My Voting History</a>
-            <a asp-controller="Home" asp-action="ElectionInfo" class="dashboard-button-style">Election Guidelines</a>
-            <a asp-controller="Users" asp-action="Profile" class="dashboard-button-style">Voter Profile</a>
-            <a asp-controller="Home" asp-action="Announcements" class="dashboard-button-style">Announcements</a>
-        </div>
-
-        <div class="logout-button">
-            <a asp-controller="Users" asp-action="Logout" class="dashboard-button-style">Logout</a>
-        </div>
-    </div>
-}

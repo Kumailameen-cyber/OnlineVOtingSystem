@@ -2,6 +2,28 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
+<!-- SAME NAVBAR (Home + Logout) -->
+<nav style="
+    width: 100%;
+    padding: 15px 20px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+">
+    <a asp-controller="Admins" asp-action="AdminDashboard"
+       style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">
+        Home
+    </a>
+
+    <a asp-controller="Users" asp-action="Logout"
+       style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">
+        Logout
+    </a>
+</nav>
+
+<div style="padding-top: 80px;"></div>
+
 <style>
     body {
         background-color: #f5f5f5;
@@ -67,40 +89,14 @@
     <h1>Admin Dashboard</h1>
 
     <div class="dashboard-buttons">
-        <a asp-controller="Users" asp-action="Index" class="dashboard-button-style">
-            Manage Users
-        </a>
-
-        <a asp-controller="Candidates" asp-action="Index" class="dashboard-button-style">
-            Manage Candidates
-        </a>
-
-        <a asp-controller="Votes" asp-action="Results" class="dashboard-button-style">
-            View Results
-        </a>
-
-        <a asp-controller="Elections" asp-action="Index" class="dashboard-button-style">
-            Manage Elections
-        </a>
-
-        <a asp-controller="Votes" asp-action="ManageVotes" class="dashboard-button-style">
-            Manage Votes
-        </a>
-
-        <a asp-controller="Announcements" asp-action="Create" class="dashboard-button-style">
-            Announcements
-        </a>
-
-        <a asp-controller="Reports" asp-action="Index" class="dashboard-button-style">
-            Reports & Analytics
-        </a>
-
-        <a asp-controller="Settings" asp-action="Index" class="dashboard-button-style">
-            System Settings
-        </a>
-        <a asp-controller="Users" asp-action="Logout" class="dashboard-button-style">Logout</a>
+        <a asp-controller="Users" asp-action="Index" class="dashboard-button-style">Manage Users</a>
+        <a asp-controller="Candidates" asp-action="Index" class="dashboard-button-style">Manage Candidates</a>
+        <a asp-controller="Votes" asp-action="Results" class="dashboard-button-style">View Results</a>
+        <a asp-controller="Elections" asp-action="Index" class="dashboard-button-style">Manage Elections</a>
+        <a asp-controller="Votes" asp-action="ManageVotes" class="dashboard-button-style">Manage Votes</a>
+        <a asp-controller="Announcements" asp-action="Create" class="dashboard-button-style">Announcements</a>
+        <a asp-controller="Reports" asp-action="Index" class="dashboard-button-style">Reports & Analytics</a>
+        
     </div>
 
-      
-    
 </div>

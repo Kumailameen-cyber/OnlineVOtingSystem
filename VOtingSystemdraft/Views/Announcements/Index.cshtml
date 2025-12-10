@@ -1,46 +1,59 @@
 ﻿@model IEnumerable<VOtingSystemdraft.Models.Announcement>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Announcements";
 }
 
-<h1>Index</h1>
+<!-- 🔹 NAVBAR (same style as before) -->
+<nav style="
+    width: 100%;
+    padding: 15px 20px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+">
+    <div>
+        <a asp-controller="Admins" asp-action="AdminDashboard"
+           style="color: white; text-decoration: none; font-size: 18px; font-weight: bold; margin-right: 20px;">
+            Home
+        </a>
+
+        <a asp-controller="Announcements" asp-action="Index"
+           style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">
+            Announcements
+        </a>
+    </div>
+
+    <a asp-controller="Users" asp-action="Login"
+       style="color: #ff7675; font-weight: bold; text-decoration: none;">
+        Logout
+    </a>
+</nav>
+
+<h1>Announcements</h1>
 
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Admin)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.Title)</th>
+            <th>@Html.DisplayNameFor(model => model.Description)</th>
+            <th>@Html.DisplayNameFor(model => model.CreatedDate)</th>
+            <th>Admin</th>
         </tr>
     </thead>
+
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Admin.Id)
-            </td>
-           
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
+                
+            </tr>
+        }
     </tbody>
 </table>

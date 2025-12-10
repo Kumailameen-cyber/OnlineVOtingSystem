@@ -5,88 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Voting System</title>
 
-    <style>
-        /* GLOBAL */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
-        }
-
-        /* NAVBAR */
-        .navbar {
-            background-color: #0b6b34;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-        }
-
-            .navbar a {
-                color: white;
-                margin-right: 20px;
-                text-decoration: none;
-                font-size: 16px;
-            }
-
-                .navbar a:hover {
-                    color: #c9ffd6;
-                }
-
-        .nav-left,
-        .nav-right {
-            display: flex;
-            align-items: center;
-        }
-
-        /* CONTAINER */
-        .container {
-            padding: 30px;
-            max-width: 1100px;
-            margin: auto;
-        }
-
-        /* FOOTER */
-        footer {
-            margin-top: 40px;
-            padding: 15px;
-            background: #ececec;
-            text-align: center;
-            color: #555;
-        }
-    </style>
+    <!-- Saved Colors for later:
+         Green: #0b6b34
+         Light Green: #c9ffd6
+    -->
 </head>
 
 <body>
-
-    <!-- NAVBAR -->
-    <header>
-        <nav class="navbar">
-            <div class="nav-left">
-                <a asp-controller="Home" asp-action="Index" style="font-weight:bold;">Online Voting System </a>
-
-                <a asp-controller="Home" asp-action="Index">Home</a>
-                <a asp-controller="Home" asp-action="About">About Us</a> 
-                <a asp-controller="Announcements" asp-action="Index">Announcement</a>
-               
-            </div>
-
-
-            <div class="nav-right">
-                
-                <a asp-controller="Users" asp-action="Login">Login</a>
-                <a asp-controller="Users" asp-action="Register">Register</a>
-            </div>
-        </nav>
-    </header>
-
-    <!-- MAIN CONTENT -->
-    <div class="container">
-        @RenderBody()
-    </div>
-
-   
+    @RenderBody()
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

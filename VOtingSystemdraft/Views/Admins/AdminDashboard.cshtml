@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Admin Dashboard";
+    var username = HttpContextAccessor?.HttpContext?.Session?.GetString("Username");
 }
 
 <!-- SAME NAVBAR (Home + Logout) -->
@@ -15,6 +16,12 @@
        style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">
         Home
     </a>
+    @if (!string.IsNullOrEmpty(username))
+    {
+        <span style="color:white; margin-left:20px; font-weight:bold;">
+            Welcome, @username
+        </span>
+    }
 
     <a asp-controller="Users" asp-action="Logout"
        style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">

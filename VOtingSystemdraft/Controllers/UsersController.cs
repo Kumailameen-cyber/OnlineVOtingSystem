@@ -181,6 +181,7 @@ namespace VOtingSystemdraft.Controllers
             return View();
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password)
@@ -190,16 +191,19 @@ namespace VOtingSystemdraft.Controllers
 
             if (user != null)
             {
-                // Set session
+                // Save SESSION values
                 HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("Role", user.Role); // optional if you need role later
+                HttpContext.Session.SetString("Username", user.Username);
+                HttpContext.Session.SetString("Role", user.Role);
 
-                // Redirect based on role
+                // Redirect according to role
                 if (user.Role == "Voter")
                     return RedirectToAction("VoterDashboard", "Voters");
-                else if (user.Role == "Admin")
+
+                if (user.Role == "Admin")
                     return RedirectToAction("AdminDashboard", "Admins");
-                else if (user.Role == "Candidate")
+
+                if (user.Role == "Candidate")
                     return RedirectToAction("CandidateDashboard", "Candidates");
             }
 

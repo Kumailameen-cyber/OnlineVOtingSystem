@@ -1,7 +1,10 @@
 ﻿@model VOtingSystemdraft.Models.Candidate
 @{
     ViewData["Title"] = "Candidate Dashboard";
+
+    var username = HttpContextAccessor?.HttpContext?.Session?.GetString("Username");
 }
+
 
 <!-- 🔹 NAVBAR (Home + Logout) -->
 <nav style="
@@ -19,10 +22,20 @@
         Home
     </a>
 
-    <a asp-controller="Users" asp-action="Login"
-       style="color: #ff7675; font-weight: bold; text-decoration: none;">
+    @if (!string.IsNullOrEmpty(username))
+    {
+        <span style="color:white; margin-left:20px; font-weight:bold;">
+            Welcome, @username
+        </span>
+    }
+
+
+    <a asp-controller="Users" asp-action="Logout"
+       style="color: white; font-weight: bold; text-decoration: none;">
         Logout
     </a>
+
+    
 </nav>
 
 

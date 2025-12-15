@@ -1,0 +1,140 @@
+﻿@{
+    ViewData["Title"] = "Candidate Guidelines";
+}
+
+<style>
+    /* Same Green Glass Theme */
+    .glass-container {
+        background: #1d976c;
+        background: -webkit-linear-gradient(to right, #93f9b9, #1d976c);
+        background: linear-gradient(to right, #93f9b9, #1d976c);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+    }
+
+    .info-glass-card {
+        width: 100%;
+        max-width: 800px;
+        padding: 50px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: white;
+        text-align: left;
+    }
+
+        .info-glass-card h2 {
+            text-align: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+    .guideline-section {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+        .guideline-section h4 {
+            color: #fff;
+            border-bottom: 2px solid rgba(255,255,255,0.5);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+    .guideline-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+        .guideline-list li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 25px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+            /* Warning Icon for Candidate Rules */
+            .guideline-list li::before {
+                content: "⚠";
+                position: absolute;
+                left: 0;
+                color: #ffda79; /* Yellow warning color */
+                font-weight: bold;
+            }
+
+    .btn-back {
+        display: block;
+        width: 250px;
+        margin: 30px auto 0;
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 12px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+        border: none;
+    }
+
+        .btn-back:hover {
+            background-color: #1a252f;
+            color: #fff;
+            transform: scale(1.05);
+        }
+</style>
+
+<div class="glass-container">
+    <div class="info-glass-card">
+        <h2>Code of Conduct</h2>
+
+        <div class="guideline-section">
+            <h4>1. Profile Integrity</h4>
+            <ul class="guideline-list">
+                <li>Your <strong>Party Name</strong> and <strong>Symbol</strong> must be unique and not imitate others.</li>
+                <li>Your <strong>Bio</strong> must be truthful. Providing false information about your qualifications is grounds for disqualification.</li>
+                <li>Offensive or inappropriate symbols will be removed immediately.</li>
+            </ul>
+        </div>
+
+        <div class="guideline-section">
+            <h4>2. Campaign Rules</h4>
+            <ul class="guideline-list">
+                <li><strong>No Hate Speech:</strong> Promoting violence or discrimination against other candidates is strictly prohibited.</li>
+                <li><strong>No Bribery:</strong> Attempting to buy votes through money or favors is a criminal offense.</li>
+                <li>Respect the "Cooling Off" period 24 hours before the election begins.</li>
+            </ul>
+        </div>
+
+        <div class="guideline-section">
+            <h4>3. Disqualification Criteria</h4>
+            <ul class="guideline-list">
+                <li>Any candidate found hacking or manipulating the voting software will be permanently banned.</li>
+                <li>Using multiple accounts to boost your own vote count is not allowed.</li>
+                <li>Failure to accept the final results announced by the Admin.</li>
+            </ul>
+        </div>
+
+        <div class="guideline-section" style="background: rgba(46, 204, 113, 0.2);">
+            <h4 style="border-bottom-color: #2ecc71;">Fair Play Pledge</h4>
+            <p style="font-size: 14px; font-style: italic;">
+                "By participating as a candidate, you agree to uphold the spirit of democracy, respect your opponents, and accept the final decision of the voters."
+            </p>
+        </div>
+
+        <a asp-controller="Candidates" asp-action="CandidateDashboard" class="btn-back">Back to Candidate Dashboard</a>
+    </div>
+</div>

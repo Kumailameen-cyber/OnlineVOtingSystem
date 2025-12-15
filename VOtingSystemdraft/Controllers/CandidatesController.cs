@@ -215,5 +215,10 @@ namespace VOtingSystemdraft.Controllers
             return RedirectToAction("CandidateDashboard", "Candidates");
         }
 
+        public IActionResult ElectionGuideLine()
+        {
+            return View();
+        }
+
     }
 }

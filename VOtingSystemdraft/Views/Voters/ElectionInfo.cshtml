@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "Election Guidelines";
+}
+
+<style>
+    /* Reuse your existing theme */
+    .glass-container {
+        background: #1d976c;
+        background: -webkit-linear-gradient(to right, #93f9b9, #1d976c);
+        background: linear-gradient(to right, #93f9b9, #1d976c);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Center vertically */
+        padding: 40px 20px;
+    }
+
+    /* Make the card wider for text content */
+    .info-glass-card {
+        width: 100%;
+        max-width: 800px; /* Wider than the login card */
+        padding: 50px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: white;
+        text-align: left; /* Text aligns left for reading */
+    }
+
+        .info-glass-card h2 {
+            text-align: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+    .guideline-section {
+        background: rgba(0, 0, 0, 0.2); /* Darker background for sections */
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+        .guideline-section h4 {
+            color: #fff;
+            border-bottom: 2px solid rgba(255,255,255,0.5);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+    .guideline-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+        .guideline-list li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 25px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+            /* Custom bullet points */
+            .guideline-list li::before {
+                content: "✔";
+                position: absolute;
+                left: 0;
+                color: #93f9b9; /* Light green check */
+                font-weight: bold;
+            }
+
+    .btn-back {
+        display: block;
+        width: 200px;
+        margin: 30px auto 0;
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 12px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+        border: none;
+    }
+
+        .btn-back:hover {
+            background-color: #1a252f;
+            color: #fff;
+            transform: scale(1.05);
+        }
+</style>
+
+<div class="glass-container">
+    <div class="info-glass-card">
+        <h2>Election Guidelines</h2>
+
+        <div class="guideline-section">
+            <h4>1. Eligibility Criteria</h4>
+            <ul class="guideline-list">
+                <li>You must be a registered voter in the system.</li>
+                <li>You must possess a valid National ID number linked to your account.</li>
+                <li>You can only cast your vote once per election.</li>
+            </ul>
+        </div>
+
+        <div class="guideline-section">
+            <h4>2. How to Vote</h4>
+            <ul class="guideline-list">
+                <li>Log in to your <strong>Voter Dashboard</strong> using your credentials.</li>
+                <li>Click on the <strong>"Cast Vote"</strong> button.</li>
+                <li>Review the list of candidates and their symbols.</li>
+                <li>Select your preferred candidate and click "Submit".</li>
+                <li>A confirmation message will appear once your vote is recorded.</li>
+            </ul>
+        </div>
+
+        <div class="guideline-section">
+            <h4>3. Rules & Regulations</h4>
+            <ul class="guideline-list">
+                <li>Do not share your login password with anyone.</li>
+                <li>Any attempt to hack or manipulate the voting results will lead to an immediate ban.</li>
+                <li>Campaigning is not allowed on this specific voting portal.</li>
+                <li>Ensure you have a stable internet connection before submitting your vote.</li>
+            </ul>
+        </div>
+
+        <div class="guideline-section" style="background: rgba(231, 76, 60, 0.2);">
+            <h4>⚠ Important Note</h4>
+            <p style="font-size: 14px;">
+                Once a vote is cast, it <strong>cannot be changed</strong> or cancelled. Please verify your choice carefully before clicking the final submit button.
+            </p>
+        </div>
+
+        @if (Context.Session.GetString("Role") == "Voter")
+        {
+            <a asp-controller="Voters" asp-action="VoterDashboard" class="btn-back">Back to Dashboard</a>
+        }
+        else
+        {
+            <a asp-controller="Users" asp-action="Login" class="btn-back">Back to Login</a>
+        }
+    </div>
+</div>

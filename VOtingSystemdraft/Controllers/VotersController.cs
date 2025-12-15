@@ -227,5 +227,13 @@ namespace VOtingSystemdraft.Controllers
             return View(voterProfile);
         }
 
+        // GET: ElectionInfo
+        public IActionResult ElectionInfo()
+        {
+            return View();
+        }
+
+        // Post: ElectionInfo
+
     }
 }

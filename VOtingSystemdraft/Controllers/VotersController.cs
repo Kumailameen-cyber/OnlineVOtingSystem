@@ -200,5 +200,32 @@ namespace VOtingSystemdraft.Controllers
             return RedirectToAction("VoterDashboard", "Voters");
         }
 
+        // GET: Voters/MyProfile
+        public async Task<IActionResult> MyProfile()
+        {
+            // 1. Get the logged-in User's ID from Session
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Users"); // Not logged in? Go to login
+            }
+
+            // 2. Try to find the Voter profile linked to this User
+            var voterProfile = await _context.Voters
+                .Include(v => v.User) // Load the User data (Email, Username) too
+                .FirstOrDefaultAsync(m => m.Id == userId);
+
+            // 3. If profile doesn't exist yet, send them to Create it
+            if (voterProfile == null)
+            {
+                // Optional: Add a message saying "Please complete your profile"
+                return RedirectToAction("Create");
+            }
+
+            // 4. If profile exists, show the "MyProfile" view
+            return View(voterProfile);
+        }
+
     }
 }

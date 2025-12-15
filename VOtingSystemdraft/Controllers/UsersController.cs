@@ -160,38 +160,76 @@ namespace VOtingSystemdraft.Controllers
             return View();
         }
 
-        // POST: Users/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // 1. Remove "Role" from the Bind list below so the user cannot fake it
-        public async Task<IActionResult> Register([Bind("Id,Username,Password,Email,Role")] User user)
+        public async Task<IActionResult> Register(
+            [Bind("Id,Username,Password,Email,Role")] User user,
+            string? NationalId, string? Address,              // Changed to string? (Optional)
+            string? PartyName, string? Symbol, string? Bio)   // Changed to string? (Optional)
         {
+            // 1. MANUAL VALIDATION (Because we made fields optional, we must check them ourselves)
+            if (user.Role == "Voter")
+            {
+                if (string.IsNullOrEmpty(NationalId)) ModelState.AddModelError("NationalId", "National ID is required.");
+                if (string.IsNullOrEmpty(Address)) ModelState.AddModelError("Address", "Address is required.");
+            }
+            else if (user.Role == "Candidate")
+            {
+                if (string.IsNullOrEmpty(PartyName)) ModelState.AddModelError("PartyName", "Party Name is required.");
+                if (string.IsNullOrEmpty(Symbol)) ModelState.AddModelError("Symbol", "Symbol is required.");
+                if (string.IsNullOrEmpty(Bio)) ModelState.AddModelError("Bio", "Bio is required.");
+            }
+
             if (ModelState.IsValid)
             {
-                if(_context.Users.Any(u => u.Email == user.Email) || _context.Users
-                    .Any(u=> u.Username.ToLower() == user.Username.ToLower()))
+                // 2. Check for duplicates
+                if (_context.Users.Any(u => u.Email == user.Email))
                 {
-                    if (_context.Users.Any(u => u.Email == user.Email))
-                    {
-                        ViewBag.Message = "Email is already registered.";
-                    }
-                    else
-                    {
-                        ViewBag.Message = "Username is already taken.";
-                    }
-                        return View(user);
+                    ViewBag.Message = "Email already registered.";
+                    return View(user);
+                }
+                if (_context.Users.Any(u => u.Username.ToLower() == user.Username.ToLower()))
+                {
+                    ViewBag.Message = "Username already taken.";
+                    return View(user);
                 }
 
-
+                // 3. Hash Password & Save User
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                // 3. Redirect to Login page after successful registration  
+
+                // 4. Save Role Data
+                if (user.Role == "Voter")
+                {
+                    var voter = new Voter
+                    {
+                        Id = user.Id,
+                        NationalId = NationalId, // We know this is safe now because of Step 1
+                        Address = Address
+                    };
+                    _context.Add(voter);
+                    await _context.SaveChangesAsync();
+                }
+                else if (user.Role == "Candidate")
+                {
+                    var candidate = new Candidate
+                    {
+                        Id = user.Id,
+                        PartyName = PartyName,
+                        Symbol = Symbol,
+                        Bio = Bio
+                    };
+                    _context.Add(candidate);
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction("Login", "Users");
             }
+
+            // If validation failed (e.g. Voter didn't enter NationalID), show the form again
             return View(user);
         }
-
         // GET: Users/Login
         // This runs when you click the link to open the page
         public IActionResult Login()

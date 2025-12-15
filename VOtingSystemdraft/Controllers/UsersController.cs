@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.EntityFrameworkCore;
+using BCrypt.Net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using VOtingSystemdraft.Models;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace VOtingSystemdraft.Controllers
 {
@@ -165,10 +168,25 @@ namespace VOtingSystemdraft.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(_context.Users.Any(u => u.Email == user.Email) || _context.Users
+                    .Any(u=> u.Username.ToLower() == user.Username.ToLower()))
+                {
+                    if (_context.Users.Any(u => u.Email == user.Email))
+                    {
+                        ViewBag.Message = "Email is already registered.";
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Username is already taken.";
+                    }
+                        return View(user);
+                }
 
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                // 3. Redirect to Login page after successful registration
+                // 3. Redirect to Login page after successful registration  
                 return RedirectToAction("Login", "Users");
             }
             return View(user);
@@ -187,9 +205,9 @@ namespace VOtingSystemdraft.Controllers
         public async Task<IActionResult> Login(string email, string password)
         {
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+                .FirstOrDefaultAsync(u => u.Email == email);
 
-            if (user != null)
+            if (user != null && BCrypt.Net.BCrypt.Verify(password,user.Password))
             {
                 // Save SESSION values
                 HttpContext.Session.SetInt32("UserId", user.Id);
@@ -207,7 +225,7 @@ namespace VOtingSystemdraft.Controllers
                     return RedirectToAction("CandidateDashboard", "Candidates");
             }
 
-            ModelState.AddModelError("", "Invalid email or password");
+            ViewBag.Message = "Invalid email or password";
             return View();
         }
 

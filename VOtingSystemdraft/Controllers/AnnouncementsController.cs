@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VOtingSystemdraft.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VOtingSystemdraft.Controllers
 {
+    [Authorize]
     public class AnnouncementsController : Controller
     {
         private readonly DatabaseContext _context;
@@ -18,11 +20,14 @@ namespace VOtingSystemdraft.Controllers
             _context = context;
         }
 
-        // GET: Announcements
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var databaseContext = _context.Announcements.Include(a => a.Admin);
-            return View(await databaseContext.ToListAsync());
+            var announcements = await _context.Announcements
+                .Include(a => a.Admin)
+                .OrderByDescending(a => a.CreatedDate)
+                .ToListAsync();
+            return View(announcements);
         }
 
         // GET: Announcements/Details/5
@@ -46,25 +51,31 @@ namespace VOtingSystemdraft.Controllers
 
         // GET: Announcements/Create
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("Id,Title,Description")] Announcement model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            var adminId = int.Parse(userIdClaim);
+            model.AdminId = adminId;
             model.CreatedDate = DateTime.Now;
-            model.AdminId = 1;
 
             _context.Announcements.Add(model);
             _context.SaveChanges();
-            Console.WriteLine("TITLE = " + model.Title);
-            Console.WriteLine("DESC = " + model.Description);
 
             return RedirectToAction("AdminDashboard","Admins");
 
@@ -73,6 +84,7 @@ namespace VOtingSystemdraft.Controllers
 
 
         // GET: Announcements/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -93,6 +105,7 @@ namespace VOtingSystemdraft.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,CreatedDate,AdminId")] Announcement announcement)
         {
@@ -126,6 +139,7 @@ namespace VOtingSystemdraft.Controllers
         }
 
         // GET: Announcements/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -146,6 +160,7 @@ namespace VOtingSystemdraft.Controllers
 
         // POST: Announcements/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

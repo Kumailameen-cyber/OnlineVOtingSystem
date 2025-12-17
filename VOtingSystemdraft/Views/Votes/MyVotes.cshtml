@@ -1,0 +1,43 @@
+@model IEnumerable<VOtingSystemdraft.Models.Vote>
+
+@{
+    ViewData["Title"] = "My Voting History";
+}
+
+<div class="container mt-5">
+    <h2>My Voting History</h2>
+    <hr />
+
+    @if (Model != null && Model.Any())
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Election</th>
+                    <th>Date Voted</th>
+                    <th>Candidate Chosen</th>
+                    <th>Party</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vote in Model)
+                {
+                    <tr>
+                        <td>@vote.Election.Title</td>
+                        <td>@vote.Timestamp.ToString("g")</td>
+                        <td>@vote.Candidate.User?.Username</td>
+                        <td>@vote.Candidate.PartyName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            You have not cast any votes yet.
+        </div>
+    }
+
+    <a asp-controller="Voters" asp-action="VoterDashboard" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>

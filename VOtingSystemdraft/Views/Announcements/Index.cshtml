@@ -1,59 +1,40 @@
-﻿@model IEnumerable<VOtingSystemdraft.Models.Announcement>
+@model IEnumerable<VOtingSystemdraft.Models.Announcement>
 
 @{
     ViewData["Title"] = "Announcements";
 }
 
-<!-- 🔹 NAVBAR (same style as before) -->
-<nav style="
-    width: 100%;
-    padding: 15px 20px;
-    background: #2c3e50;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-">
-    <div>
-        <a asp-controller="Admins" asp-action="AdminDashboard"
-           style="color: white; text-decoration: none; font-size: 18px; font-weight: bold; margin-right: 20px;">
-            Home
-        </a>
-
-        <a asp-controller="Announcements" asp-action="Index"
-           style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">
-            Announcements
-        </a>
-    </div>
-
-    <a asp-controller="Users" asp-action="Login"
-       style="color: #ff7675; font-weight: bold; text-decoration: none;">
-        Logout
-    </a>
-</nav>
-
-<h1>Announcements</h1>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Title)</th>
-            <th>@Html.DisplayNameFor(model => model.Description)</th>
-            <th>@Html.DisplayNameFor(model => model.CreatedDate)</th>
-            <th>Admin</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Title)</td>
-                <td>@Html.DisplayFor(modelItem => item.Description)</td>
-                <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
-                
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container mt-4" style="max-width: 900px;">
+    <h2 class="mb-4">Latest News</h2>
+    @foreach (var a in Model)
+    {
+        <article class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">@a.Title</h4>
+                <p class="text-muted mb-2">@a.CreatedDate.ToString("g")</p>
+                <p class="card-text">@a.Description</p>
+                @if (a.Admin != null)
+                {
+                    <small class="text-muted">Posted by: @a.Admin.User?.Username</small>
+                }
+            </div>
+        </article>
+    }
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No announcements yet.</div>
+    }
+</div>
+<div class="container mt-3" style="max-width: 900px;">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-controller="Admins" asp-action="AdminDashboard" class="btn btn-secondary">Back to Dashboard</a>
+    }
+    else if (User.IsInRole("Candidate"))
+    {
+        <a asp-controller="Candidates" asp-action="CandidateDashboard" class="btn btn-secondary">Back to Dashboard</a>
+    }
+    else
+    {
+        <a asp-controller="Voters" asp-action="VoterDashboard" class="btn btn-secondary">Back to Dashboard</a>
+    }

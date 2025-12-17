@@ -69,6 +69,9 @@ namespace VOtingSystemdraft.Migrations
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ElectionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PartyName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -78,7 +81,38 @@ namespace VOtingSystemdraft.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ElectionId");
+
                     b.ToTable("Candidates");
+                });
+
+            modelBuilder.Entity("VOtingSystemdraft.Models.Election", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Elections");
                 });
 
             modelBuilder.Entity("VOtingSystemdraft.Models.User", b =>
@@ -109,6 +143,38 @@ namespace VOtingSystemdraft.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("VOtingSystemdraft.Models.Vote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CandidateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("VoterId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CandidateId");
+
+                    b.HasIndex("VoterId");
+
+                    b.HasIndex("ElectionId", "VoterId")
+                        .IsUnique();
+
+                    b.ToTable("Votes");
                 });
 
             modelBuilder.Entity("VOtingSystemdraft.Models.Voter", b =>
@@ -152,13 +218,46 @@ namespace VOtingSystemdraft.Migrations
 
             modelBuilder.Entity("VOtingSystemdraft.Models.Candidate", b =>
                 {
+                    b.HasOne("VOtingSystemdraft.Models.Election", "Election")
+                        .WithMany("Candidates")
+                        .HasForeignKey("ElectionId");
+
                     b.HasOne("VOtingSystemdraft.Models.User", "User")
                         .WithOne()
                         .HasForeignKey("VOtingSystemdraft.Models.Candidate", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Election");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("VOtingSystemdraft.Models.Vote", b =>
+                {
+                    b.HasOne("VOtingSystemdraft.Models.Candidate", "Candidate")
+                        .WithMany()
+                        .HasForeignKey("CandidateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("VOtingSystemdraft.Models.Election", "Election")
+                        .WithMany("Votes")
+                        .HasForeignKey("ElectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VOtingSystemdraft.Models.Voter", "Voter")
+                        .WithMany()
+                        .HasForeignKey("VoterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Candidate");
+
+                    b.Navigation("Election");
+
+                    b.Navigation("Voter");
                 });
 
             modelBuilder.Entity("VOtingSystemdraft.Models.Voter", b =>
@@ -170,6 +269,13 @@ namespace VOtingSystemdraft.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("VOtingSystemdraft.Models.Election", b =>
+                {
+                    b.Navigation("Candidates");
+
+                    b.Navigation("Votes");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,4 +1,4 @@
-﻿@model VOtingSystemdraft.Models.Voter
+@model VOtingSystemdraft.Models.Voter
 @{
     ViewData["Title"] = "Voter Dashboard";
     var username = HttpContextAccessor?.HttpContext?.Session?.GetString("Username");
@@ -37,17 +37,41 @@
         <h1>Voter Dashboard</h1>
 
         <div class="dashboard-buttons">
-            <a asp-controller="Votes" asp-action="Vote" class="dashboard-button-style">Cast Vote</a>
+            <a asp-controller="Votes" asp-action="Index" class="dashboard-button-style">Cast Vote</a>
             <a asp-controller="Candidates" asp-action="Index" class="dashboard-button-style">View Candidates</a>
             <a asp-controller="Votes" asp-action="MyVotes" class="dashboard-button-style">My Voting History</a>
             <a asp-controller="Voters" asp-action="ElectionInfo" class="dashboard-button-style">Election Guidelines</a>
             <a asp-controller="Voters" asp-action="MyProfile" class="dashboard-button-style">Voter Profile</a>
-            <a asp-controller="Home" asp-action="Announcements" class="dashboard-button-style">Announcements</a>
+            <a asp-controller="Results" asp-action="Index" class="dashboard-button-style">See Results</a>
         </div>
 
       
     </div>
 
+<div class="dashboard-container" style="margin-top:20px;">
+    <h2>Latest News</h2>
+    <div>
+        @{
+            var latest = ViewBag.LatestAnnouncements as IEnumerable<VOtingSystemdraft.Models.Announcement>;
+            latest = latest ?? Enumerable.Empty<VOtingSystemdraft.Models.Announcement>();
+        }
+        @foreach (var a in latest)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">@a.Title</h5>
+                    <p class="text-muted">@a.CreatedDate.ToString("g")</p>
+                    <p>@a.Description</p>
+                </div>
+            </div>
+        }
+        @if (!latest.Any())
+        {
+            <div class="alert alert-info">No recent announcements.</div>
+        }
+        <a asp-controller="Announcements" asp-action="Index" class="btn btn-outline-primary">View All Announcements</a>
+    </div>
+</div>
 
 <style>
     body {
@@ -97,6 +121,6 @@
             background: #93f9b9;
             color: #1d976c;
             box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-        }
+    }
 
     .logout-button {

@@ -1,13 +1,16 @@
-﻿@model IEnumerable<VOtingSystemdraft.Models.Candidate>
+@model IEnumerable<VOtingSystemdraft.Models.Candidate>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Candidates</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create">Create New</a>
+    }
 </p>
 <table class="table">
     <thead>
@@ -51,3 +54,6 @@
 }
     </tbody>
 </table>
+<div class="mt-3">
+    <a asp-controller="Voters" asp-action="VoterDashboard" class="btn btn-secondary">Back to Dashboard</a>
+</div>

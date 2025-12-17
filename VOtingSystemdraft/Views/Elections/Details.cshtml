@@ -1,0 +1,82 @@
+@model VOtingSystemdraft.Models.Election
+
+@{
+    ViewData["Title"] = "Election Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h1>Election Details</h1>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">@Model.Title</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.Description)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Description)
+                </dd>
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.StartDate)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.StartDate)
+                </dd>
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.EndDate)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.EndDate)
+                </dd>
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.IsActive)
+                </dt>
+                <dd class="col-sm-9">
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Registered Candidates</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Candidates != null && Model.Candidates.Any())
+            {
+                <ul class="list-group list-group-flush">
+                    @foreach (var candidate in Model.Candidates)
+                    {
+                        <li class="list-group-item">
+                            <strong>@candidate.PartyName</strong> 
+                            @if (!string.IsNullOrEmpty(candidate.Symbol))
+                            {
+                                <span class="text-muted">(@candidate.Symbol)</span>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted mb-0">No candidates registered for this election yet.</p>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

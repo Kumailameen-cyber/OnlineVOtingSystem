@@ -2,23 +2,30 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
-using BCrypt.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VOtingSystemdraft.Models;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using VOtingSystemdraft.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VOtingSystemdraft.Controllers
 {
+    [Authorize]
     public class UsersController : Controller
     {
         private readonly DatabaseContext _context;
+        private readonly PasswordHelper _passwordHelper;
 
-        public UsersController(DatabaseContext context)
+        public UsersController(DatabaseContext context, PasswordHelper passwordHelper)
         {
             _context = context;
+            _passwordHelper = passwordHelper;
         }
 
         // GET: Users
@@ -46,6 +53,7 @@ namespace VOtingSystemdraft.Controllers
         }
 
         // GET: Users/Create
+        [AllowAnonymous]
         public IActionResult Create()
         {
             return View();
@@ -55,6 +63,7 @@ namespace VOtingSystemdraft.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Username,Password,Email,Role")] User user)
         {
@@ -155,12 +164,15 @@ namespace VOtingSystemdraft.Controllers
         {
             return _context.Users.Any(e => e.Id == id);
         }
+
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(
             [Bind("Id,Username,Password,Email,Role")] User user,
@@ -195,7 +207,7 @@ namespace VOtingSystemdraft.Controllers
                 }
 
                 // 3. Hash Password & Save User
-                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                user.Password = _passwordHelper.HashPassword(user.Password);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
 
@@ -232,6 +244,7 @@ namespace VOtingSystemdraft.Controllers
         }
         // GET: Users/Login
         // This runs when you click the link to open the page
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
@@ -239,18 +252,34 @@ namespace VOtingSystemdraft.Controllers
 
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == email);
 
-            if (user != null && BCrypt.Net.BCrypt.Verify(password,user.Password))
+            if (user != null && _passwordHelper.VerifyPassword(password, user.Password))
             {
-                // Save SESSION values
-                HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetString("Role", user.Role);
+                // Create Claims
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, user.Role)
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(60)
+                };
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
 
                 // Redirect according to role
                 if (user.Role == "Voter")
@@ -267,10 +296,10 @@ namespace VOtingSystemdraft.Controllers
             return View();
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear(); // Clears all session data (UserId, Role, etc.)
-            return RedirectToAction("Login", "Users"); // Redirects to login page
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Users"); 
         }
 
     }

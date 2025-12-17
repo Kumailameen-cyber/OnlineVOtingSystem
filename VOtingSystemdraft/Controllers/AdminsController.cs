@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VOtingSystemdraft.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VOtingSystemdraft.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminsController : Controller
     {
         private readonly DatabaseContext _context;
@@ -161,11 +163,7 @@ namespace VOtingSystemdraft.Controllers
         }
         public IActionResult AdminDashboard()
         {
-            var role = HttpContext.Session.GetString("Role");
-            if (role != "Admin")
-            {
-                return RedirectToAction("Login", "Users");
-            }
+            // Authorization handled by [Authorize(Roles = "Admin")]
             return View();
         }
     }

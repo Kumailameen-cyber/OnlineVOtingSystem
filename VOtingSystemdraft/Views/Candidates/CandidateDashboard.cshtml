@@ -1,0 +1,154 @@
+@model VOtingSystemdraft.Models.Candidate
+@{
+    ViewData["Title"] = "Candidate Dashboard";
+
+    var username = HttpContextAccessor?.HttpContext?.Session?.GetString("Username");
+}
+
+
+<!-- 🔹 NAVBAR (Home + Logout) -->
+<nav style="
+    width: 100%;
+    padding: 15px 20px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+">
+    <a asp-controller="Candidate" asp-action="CandidateDashboard"
+       style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">
+        Home
+    </a>
+
+    @if (!string.IsNullOrEmpty(username))
+    {
+        <span style="color:white; margin-left:20px; font-weight:bold;">
+            Welcome, @username
+        </span>
+    }
+
+
+    <a asp-controller="Users" asp-action="Logout"
+       style="color: white; font-weight: bold; text-decoration: none;">
+        Logout
+    </a>
+
+    
+</nav>
+
+
+
+    <!-- Show the normal candidate dashboard -->
+    <div class="dashboard-container">
+        <h1>Candidate Dashboard</h1>
+
+        <div class="dashboard-buttons">
+            <a asp-controller="Candidates" asp-action="Edit" class="dashboard-button-style">
+                Update My Profile
+            </a>
+
+            <a asp-controller="Votes" asp-action="MyVotes" class="dashboard-button-style">
+                View My Voting Stats
+            </a>
+
+            <a asp-controller="Candidates" asp-action="PartyInfo" class="dashboard-button-style">
+                Party Info
+            </a>
+
+            <a asp-controller="Candidates" asp-action="ManageCampaign" class="dashboard-button-style">
+                Manage Campaign
+            </a>
+
+            <a asp-controller="Candidates" asp-action="ElectionGuideLine" class="dashboard-button-style">
+                Election Guidelines
+            </a>
+
+            <a asp-controller="Announcements" asp-action="Index" class="dashboard-button-style">
+                Announcements
+            </a>
+        </div>
+
+       
+    </div>
+
+
+<style>
+    body {
+        background-color: #f5f5f5;
+        font-family: Arial, sans-serif;
+    }
+
+    .dashboard-container {
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 40px;
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    h1 {
+        color: #1d976c;
+        margin-bottom: 40px;
+        font-size: 32px;
+        font-weight: 600;
+    }
+
+    .dashboard-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .dashboard-button-style {
+        display: block;
+        padding: 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        transition: 0.3s;
+        background: #1d976c;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .dashboard-button-style:hover {
+        background: #93f9b9;
+        color: #1d976c;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+
+    .logout-button {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .logout-button a {
+        width: 200px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+</style>

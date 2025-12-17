@@ -1,0 +1,43 @@
+@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Election Results";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Election Results</h2>
+
+    <table class="table table-hover table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Election</th>
+                <th>Total Votes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Election.Title</td>
+                <td>@item.TotalVotes</td>
+                <td>
+                    <a asp-controller="Results" asp-action="Details" asp-route-id="@item.Election.Id" class="btn btn-primary btn-sm">
+                        View Results
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            No elections found.
+        </div>
+    }
+    <div class="text-center mt-4">
+        <a asp-controller="Voters" asp-action="VoterDashboard" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>

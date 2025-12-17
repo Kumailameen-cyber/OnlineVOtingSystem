@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using VOtingSystemdraft.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VOtingSystemdraft.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -13,11 +15,13 @@ namespace VOtingSystemdraft.Controllers
             _logger = logger;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
         }
 
+        [AllowAnonymous]
         public IActionResult About()
         {
             return View();
@@ -29,9 +33,7 @@ namespace VOtingSystemdraft.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public IActionResult Dashboard()
-        {
-            return View();
-        }
+       
+
     }
 }

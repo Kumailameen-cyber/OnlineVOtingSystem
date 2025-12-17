@@ -1,0 +1,40 @@
+@model IEnumerable<VOtingSystemdraft.Models.Announcement>
+
+@{
+    ViewData["Title"] = "Announcements";
+}
+
+<div class="container mt-4" style="max-width: 900px;">
+    <h2 class="mb-4">Latest News</h2>
+    @foreach (var a in Model)
+    {
+        <article class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">@a.Title</h4>
+                <p class="text-muted mb-2">@a.CreatedDate.ToString("g")</p>
+                <p class="card-text">@a.Description</p>
+                @if (a.Admin != null)
+                {
+                    <small class="text-muted">Posted by: @a.Admin.User?.Username</small>
+                }
+            </div>
+        </article>
+    }
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No announcements yet.</div>
+    }
+</div>
+<div class="container mt-3" style="max-width: 900px;">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-controller="Admins" asp-action="AdminDashboard" class="btn btn-secondary">Back to Dashboard</a>
+    }
+    else if (User.IsInRole("Candidate"))
+    {
+        <a asp-controller="Candidates" asp-action="CandidateDashboard" class="btn btn-secondary">Back to Dashboard</a>
+    }
+    else
+    {
+        <a asp-controller="Voters" asp-action="VoterDashboard" class="btn btn-secondary">Back to Dashboard</a>
+    }

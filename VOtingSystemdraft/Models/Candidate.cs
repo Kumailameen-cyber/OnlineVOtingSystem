@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VOtingSystemdraft.Models
@@ -14,6 +14,9 @@ namespace VOtingSystemdraft.Models
 
         public string? Symbol { get; set; }
         public string? Bio { get; set; }
+
+        public int? ElectionId { get; set; }
+        public Election? Election { get; set; }
 
         public User User { get; set; } = null!;
     }

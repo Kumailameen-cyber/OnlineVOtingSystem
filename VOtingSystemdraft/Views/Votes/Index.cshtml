@@ -1,0 +1,68 @@
+@model IEnumerable<VOtingSystemdraft.Controllers.ElectionStatusViewModel>
+
+@{
+    ViewData["Title"] = "Active Elections";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Active Elections</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">@TempData["Message"]</div>
+    }
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@item.Election.Title</h5>
+                        <p class="card-text text-muted">
+                            @if (!string.IsNullOrEmpty(item.Election.Description))
+                            {
+                                @(item.Election.Description.Length > 100 ? item.Election.Description.Substring(0, 97) + "..." : item.Election.Description)
+                            }
+                        </p>
+                        <ul class="list-unstyled mt-auto mb-3">
+                            <li><strong>Start:</strong> @item.Election.StartDate.ToString("g")</li>
+                            <li><strong>End:</strong> @item.Election.EndDate.ToString("g")</li>
+                        </ul>
+                        
+                        @if (item.HasVoted)
+                        {
+                            <button class="btn btn-secondary w-100 disabled" disabled>
+                                <i class="bi bi-check-circle-fill"></i> Voted
+                            </button>
+                        }
+                        else
+                        {
+                            <a asp-action="Ballot" asp-route-id="@item.Election.Id" class="btn btn-primary w-100">
+                                <i class="bi bi-box-arrow-in-right"></i> Vote Now
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center">
+            No active elections found at this time.
+        </div>
+    }
+    <div class="text-center mt-4">
+        <a asp-controller="Voters" asp-action="VoterDashboard" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>

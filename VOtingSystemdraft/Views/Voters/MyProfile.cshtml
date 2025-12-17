@@ -1,0 +1,43 @@
+﻿@model VOtingSystemdraft.Models.Voter
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div style="display: flex; justify-content: center; margin-top: 50px;">
+    <div class="card shadow-lg" style="width: 400px; border-radius: 15px; overflow: hidden;">
+        <div style="background-color: #2c3e50; padding: 20px; text-align: center; color: white;">
+            <h3>User Profile</h3>
+            <p style="margin:0;">@Model.User.Username</p>
+        </div>
+
+        <div style="padding: 30px; background-color: #fff;">
+
+            <div style="margin-bottom: 15px;">
+                <strong>National ID:</strong>
+                <p class="text-muted">@Model.NationalId</p>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <strong>Address:</strong>
+                <p class="text-muted">@Model.Address</p>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <strong>Email:</strong>
+                <p class="text-muted">@Model.User.Email</p>
+            </div>
+
+            <hr />
+
+            <div style="text-align: center;">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary" style="border-radius: 20px; padding: 10px 30px;">
+                    Edit My Info
+                </a>
+                <br /><br />
+                <a asp-action="VoterDashboard" class="text-secondary">Back to Dashboard</a>
+            </div>
+
+        </div>
+    </div>
+</div>

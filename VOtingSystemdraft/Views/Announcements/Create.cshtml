@@ -1,0 +1,26 @@
+﻿@model VOtingSystemdraft.Models.Announcement
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="container mt-4">
+    <h2>Create Announcement</h2>
+
+    <form asp-controller="Announcements" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="form-group mb-3">
+            <label>Title</label>
+            <input asp-for="Title" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Description</label>
+            <textarea asp-for="Description" class="form-control" rows="5" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+</div>
+

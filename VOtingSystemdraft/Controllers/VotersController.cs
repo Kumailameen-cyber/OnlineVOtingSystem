@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VOtingSystemdraft.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace VOtingSystemdraft.Controllers
 {
+    [Authorize(Roles = "Voter, Admin")]
     public class VotersController : Controller
     {
         private readonly DatabaseContext _context;
@@ -28,9 +31,21 @@ namespace VOtingSystemdraft.Controllers
         // GET: Voters/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (User.IsInRole("Voter"))
             {
-                return NotFound();
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdClaim))
+                {
+                    return RedirectToAction("Login", "Users");
+                }
+                id = int.Parse(userIdClaim);
+            }
+            else
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
             }
 
             var voter = await _context.Voters
@@ -69,19 +84,20 @@ namespace VOtingSystemdraft.Controllers
         }
 
         // GET: Voters/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit()
         {
-            if (id == null)
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim))
             {
-                return NotFound();
+                return RedirectToAction("Login", "Users");
             }
+            var userId = int.Parse(userIdClaim);
 
-            var voter = await _context.Voters.FindAsync(id);
+            var voter = await _context.Voters.FindAsync(userId);
             if (voter == null)
             {
-                return NotFound();
+                return RedirectToAction("Create");
             }
-            ViewData["Id"] = new SelectList(_context.Users, "Id", "Email", voter.Id);
             return View(voter);
         }
 
@@ -90,35 +106,35 @@ namespace VOtingSystemdraft.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,NationalId,Address")] Voter voter)
+        public async Task<IActionResult> Edit(string NationalId, string? Address)
         {
-            if (id != voter.Id)
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim))
             {
-                return NotFound();
+                return RedirectToAction("Login", "Users");
+            }
+            var userId = int.Parse(userIdClaim);
+
+            if (string.IsNullOrEmpty(NationalId))
+            {
+                ModelState.AddModelError("NationalId", "National ID is required.");
             }
 
             if (ModelState.IsValid)
             {
-                try
+                var voter = await _context.Voters.FindAsync(userId);
+                if (voter == null)
                 {
-                    _context.Update(voter);
-                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Create");
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VoterExists(voter.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                voter.NationalId = NationalId;
+                voter.Address = Address;
+                _context.Update(voter);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("MyProfile");
             }
-            ViewData["Id"] = new SelectList(_context.Users, "Id", "Email", voter.Id);
-            return View(voter);
+            var existing = await _context.Voters.FindAsync(userId);
+            return View(existing);
         }
 
         // GET: Voters/Delete/5
@@ -159,5 +175,88 @@ namespace VOtingSystemdraft.Controllers
         {
             return _context.Voters.Any(e => e.Id == id);
         }
+        public IActionResult VoterDashboard()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+
+            int userId = int.Parse(userIdClaim);
+
+            var voter = _context.Voters.FirstOrDefault(v => v.Id == userId);
+            ViewBag.LatestAnnouncements = _context.Announcements
+                .OrderByDescending(a => a.CreatedDate)
+                .Take(3)
+                .ToList();
+            return View(voter);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateVoterInfo(int UserId, string NationalId, string Address)
+        {
+            var voter = await _context.Voters.FirstOrDefaultAsync(v => v.Id == UserId);
+
+            if (voter == null)
+            {
+                voter = new Voter
+                {
+                    Id = UserId,
+                    NationalId = NationalId,
+                    Address = Address
+                };
+                _context.Add(voter);
+            }
+            else
+            {
+                voter.NationalId = NationalId;
+                voter.Address = Address;
+                _context.Update(voter);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("VoterDashboard", "Voters");
+        }
+
+        // GET: Voters/MyProfile
+        public async Task<IActionResult> MyProfile()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+
+            int userId = int.Parse(userIdClaim);
+
+            // 2. Try to find the Voter profile linked to this User
+            var voterProfile = await _context.Voters
+                .Include(v => v.User) // Load the User data (Email, Username) too
+                .FirstOrDefaultAsync(m => m.Id == userId);
+
+            // 3. If profile doesn't exist yet, send them to Create it
+            if (voterProfile == null)
+            {
+                // Optional: Add a message saying "Please complete your profile"
+                return RedirectToAction("Create");
+            }
+
+            // 4. If profile exists, show the "MyProfile" view
+            return View(voterProfile);
+        }
+
+        // GET: ElectionInfo
+        public IActionResult ElectionInfo()
+        {
+            return View();
+        }
+
+        // Post: ElectionInfo
+
     }
 }

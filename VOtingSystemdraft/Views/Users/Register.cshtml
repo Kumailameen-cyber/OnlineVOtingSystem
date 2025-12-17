@@ -45,7 +45,7 @@
         height: 45px;
         color: #333;
         margin-bottom: 15px;
-        width: 70%
+        width: 70%;
     }
 
     .control-label {
@@ -79,6 +79,10 @@
             text-decoration: none;
             font-weight: 500;
         }
+
+    .role-fields {
+        display: none;
+    }
 </style>
 
 <div class="glass-container">
@@ -86,7 +90,13 @@
         <h2>Register</h2>
 
         <form asp-action="Register">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert-glass">
+                    @ViewBag.Message
+                </div>
+            }
+            <div asp-validation-summary="All" class="text-danger"></div>
 
             <div class="form-group">
                 <label asp-for="Username" class="control-label"></label>
@@ -107,6 +117,44 @@
             </div>
 
             <div class="form-group">
+                <label asp-for="Role" class="control-label"></label>
+                <select id="RoleSelect" asp-for="Role" class="form-control" required>
+                    <option value="">Select Role</option>
+                    <option value="Candidate">Candidate</option>
+                    <option value="Voter">Voter</option>
+                </select>
+                <span asp-validation-for="Role" class="text-warning" style="font-size: 12px;"></span>
+            </div>
+
+            <!-- Candidate fields -->
+            <div id="candidateFields" class="role-fields">
+                <div class="form-group">
+                    <label class="control-label">Party Name:</label>
+                    <input type="text" name="PartyName" class="form-control" placeholder="Party Name" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Symbol:</label>
+                    <input type="text" name="Symbol" class="form-control" placeholder="Symbol" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Bio:</label>
+                    <input type="text" name="Bio" class="form-control" placeholder="Bio" />
+                </div>
+            </div>
+
+            <!-- Voter fields -->
+            <div id="voterFields" class="role-fields">
+                <div class="form-group">
+                    <label class="control-label">National ID:</label>
+                    <input type="text" name="NationalId" class="form-control" placeholder="National ID" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Address:</label>
+                    <input type="text" name="Address" class="form-control" placeholder="Address" />
+                </div>
+            </div>
+
+            <div class="form-group">
                 <input type="submit" value="REGISTER" class="btn btn-glass w-100" />
             </div>
         </form>
@@ -118,7 +166,22 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        const roleSelect = document.getElementById('RoleSelect');
+        const candidateFields = document.getElementById('candidateFields');
+        const voterFields = document.getElementById('voterFields');
+
+        roleSelect.addEventListener('change', function () {
+            if (this.value === 'Candidate') {
+                candidateFields.style.display = 'block';
+                voterFields.style.display = 'none';
+            } else if (this.value === 'Voter') {
+                candidateFields.style.display = 'none';
+                voterFields.style.display = 'block';
+            } else {
+                candidateFields.style.display = 'none';
+                voterFields.style.display = 'none';
+            }
+        });
+    </script>
 }

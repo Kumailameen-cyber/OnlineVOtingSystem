@@ -1,0 +1,69 @@
+@model VOtingSystemdraft.Models.ViewModels.ElectionResultViewModel
+
+@{
+    ViewData["Title"] = "Results - " + Model.ElectionTitle;
+}
+
+<div class="container mt-5" style="max-width: 900px;">
+    <div class="mb-4">
+        <h2 class="mb-1">@Model.ElectionTitle</h2>
+        <p class="text-muted">Total Votes: @Model.TotalVotes</p>
+    </div>
+
+    @if (Model.Winner != null)
+    {
+        <div class="card border-success mb-4">
+            <div class="card-header bg-success text-white">
+                Winner
+            </div>
+            <div class="card-body">
+                <h4 class="card-title mb-1">@Model.Winner.CandidateName</h4>
+                <p class="card-text">@Model.Winner.Party</p>
+                <div class="d-flex align-items-center">
+                    <span class="me-3">@Model.Winner.VoteCount votes</span>
+                    <div class="progress w-100">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @Model.Winner.Percentage%"></div>
+                    </div>
+                    <span class="ms-3">@Model.Winner.Percentage.ToString("0.0")%</span>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">No votes have been cast for this election yet.</div>
+    }
+
+    <h5 class="mt-4">All Candidates</h5>
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Candidate</th>
+                <th>Party</th>
+                <th>Votes</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var r in Model.Results)
+        {
+            <tr>
+                <td>@r.CandidateName</td>
+                <td>@r.Party</td>
+                <td>@r.VoteCount</td>
+                <td style="min-width: 250px;">
+                    <div class="d-flex align-items-center">
+                        <div class="progress w-100">
+                            <div class="progress-bar" role="progressbar" style="width: @r.Percentage%"></div>
+                        </div>
+                        <span class="ms-3">@r.Percentage.ToString("0.0")%</span>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <a asp-controller="Results" asp-action="Index" class="btn btn-secondary mt-3">Back to Elections</a>
+    <a asp-controller="Voters" asp-action="VoterDashboard" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>

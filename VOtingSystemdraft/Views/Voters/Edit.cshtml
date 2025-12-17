@@ -1,4 +1,4 @@
-﻿@model VOtingSystemdraft.Models.Voter
+@model VOtingSystemdraft.Models.Voter
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -30,8 +30,8 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="mt-3">
+    <a asp-action="MyProfile" class="btn btn-secondary">Back to Profile</a>
 </div>
 
 @section Scripts {

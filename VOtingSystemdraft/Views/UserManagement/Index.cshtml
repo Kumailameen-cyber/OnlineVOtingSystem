@@ -13,7 +13,9 @@
                 <a asp-controller="UserManagement" asp-action="Voters" class="btn btn-outline-secondary">Voters</a>
                 <a asp-controller="UserManagement" asp-action="Candidates" class="btn btn-outline-secondary">Candidates</a>
             </div>
-            <a asp-controller="Admins" asp-action="AdminDashboard" class="btn btn-secondary">Back to Dashboard</a>
+            <a asp-controller="Admins" asp-action="AdminDashboard" class="btn btn-secondary">
+                Back to Dashboard
+            </a>
         </div>
     </div>
 
@@ -26,33 +28,70 @@
         <div class="alert alert-success">@TempData["Success"]</div>
     }
 
+    <div class="mb-3">
+        <a asp-controller="UserManagement" asp-action="CreateVoters" class="btn btn-primary">
+            Add Voter
+        </a>
+        <a asp-controller="UserManagement" asp-action="CreateCandidates" class="btn btn-success">
+            Add Candidate
+        </a>
+    </div>
+
+
     <table class="table table-striped table-hover">
         <thead class="table-dark">
             <tr>
                 <th>Username</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th style="width: 160px;">Actions</th>
+                <th style="width: 200px;">Actions</th>
             </tr>
         </thead>
         <tbody>
-        @foreach (var u in Model)
-        {
-            <tr>
-                <td>@u.Username</td>
-                <td>@u.Email</td>
-                <td>@u.Role</td>
-                <td>
-                    <form asp-controller="UserManagement" asp-action="Delete" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@u.Id" />
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        }
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@u.Username</td>
+                    <td>@u.Email</td>
+                    <td>@u.Role</td>
+                    <td>
+                        @if (u.Role == "Voter")
+                        {
+                            <a asp-controller="Voter"
+                               asp-action="Edit"
+                               asp-route-id="@u.Id"
+                               class="btn btn-sm btn-warning">
+                                Edit
+                            </a>
+                        }
+                        else if (u.Role == "Candidate")
+                        {
+                            <a asp-controller="Candidate"
+                               asp-action="Edit"
+                               asp-route-id="@u.Id"
+                               class="btn btn-sm btn-warning">
+                                Edit
+                            </a>
+                        }
+
+                        <form asp-controller="UserManagement"
+                              asp-action="Delete"
+                              method="post"
+                              class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@u.Id" />
+                            <button type="submit"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this user?')">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
+
     @if (!Model.Any())
     {
         <div class="alert alert-info">No users found.</div>

@@ -22,13 +22,7 @@
                          || (controller == "UserManagement");
         var showTopNav = !hideTopNav;
     }
-    @if (showTopNav)
-    {
-        <nav style="width:100%; padding: 12px 20px; background:#2c3e50; color:white; display:flex; gap:16px;">
-            <a asp-controller="Home" asp-action="Index" style="color:white; text-decoration:none; font-weight:bold;">Home</a>
-            <a asp-controller="Results" asp-action="Index" style="color:white; text-decoration:none; font-weight:bold;">Results</a>
-        </nav>
-    }
+   
     <div style="padding-top: 10px;">
         @RenderBody()
     </div>

@@ -1,0 +1,34 @@
+﻿@model VOtingSystemdraft.Models.Voter
+
+@{
+    ViewData["Title"] = "Create Voter";
+}
+
+<h1>Create Voter</h1>
+
+<form asp-action="CreateVoters" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group mb-2">
+        <label>Username</label>
+        <input type="text" name="username" class="form-control" required />
+    </div>
+
+    <div class="form-group mb-2">
+        <label>Email</label>
+        <input type="email" name="email" class="form-control" required />
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="NationalId"></label>
+        <input asp-for="NationalId" class="form-control" required />
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="Address"></label>
+        <input asp-for="Address" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

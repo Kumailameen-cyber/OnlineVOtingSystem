@@ -189,7 +189,7 @@ namespace VOtingSystemdraft.Controllers
             var voter = _context.Voters.FirstOrDefault(v => v.Id == userId);
             ViewBag.LatestAnnouncements = _context.Announcements
                 .OrderByDescending(a => a.CreatedDate)
-                .Take(3)
+                .Take(5)
                 .ToList();
             return View(voter);
         }

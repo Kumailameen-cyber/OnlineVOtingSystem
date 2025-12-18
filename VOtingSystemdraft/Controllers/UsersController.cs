@@ -309,9 +309,32 @@ namespace VOtingSystemdraft.Controllers
         {
             if (secretKey == "SUPER_SECRET_123")
             {
+                var systemEmail = "superadmin@system.local";
+                var systemUsername = "SuperAdmin";
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == systemEmail);
+                if (user == null)
+                {
+                    user = new User
+                    {
+                        Username = systemUsername,
+                        Email = systemEmail,
+                        Role = "Admin",
+                        Password = _passwordHelper.HashPassword(Guid.NewGuid().ToString())
+                    };
+                    _context.Users.Add(user);
+                    await _context.SaveChangesAsync();
+                }
+                if (!await _context.Admins.AnyAsync(a => a.Id == user.Id))
+                {
+                    _context.Admins.Add(new Admin { Id = user.Id });
+                    await _context.SaveChangesAsync();
+                }
+
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, "SuperAdmin"),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Role, "Admin")
                 };
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

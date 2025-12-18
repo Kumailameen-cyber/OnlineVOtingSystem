@@ -25,6 +25,7 @@ namespace VOtingSystemdraft.Controllers
         {
             var announcements = await _context.Announcements
                 .Include(a => a.Admin)
+                .ThenInclude(ad => ad.User)
                 .OrderByDescending(a => a.CreatedDate)
                 .ToListAsync();
             return View(announcements);

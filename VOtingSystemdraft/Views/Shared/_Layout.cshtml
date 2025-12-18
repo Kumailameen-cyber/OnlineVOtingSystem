@@ -17,9 +17,12 @@
     @{
         var controller = ViewContext.RouteData.Values["controller"]?.ToString();
         var action = ViewContext.RouteData.Values["action"]?.ToString();
-        var hideTopNav = (controller == "Voters" && action == "VoterDashboard")
-                         || (controller == "Admins" && action == "AdminDashboard")
-                         || (controller == "UserManagement");
+        var hideTopNav =
+            (controller == "Voters" && action == "VoterDashboard")
+            || (controller == "Admins" && action == "AdminDashboard")
+            || (controller == "UserManagement")
+            || (controller == "Elections" && action == "Index")
+            || (controller == "Announcements" && action == "Index");
         var showTopNav = !hideTopNav;
     }
     @if (showTopNav)

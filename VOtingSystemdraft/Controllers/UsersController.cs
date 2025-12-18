@@ -296,6 +296,40 @@ namespace VOtingSystemdraft.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public IActionResult AdminLogin()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AdminLogin(string secretKey)
+        {
+            if (secretKey == "SUPER_SECRET_123")
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, "SuperAdmin"),
+                    new Claim(ClaimTypes.Role, "Admin")
+                };
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(60)
+                };
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+                return RedirectToAction("AdminDashboard", "Admins");
+            }
+            ModelState.AddModelError(string.Empty, "Invalid Key");
+            return View();
+        }
+
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

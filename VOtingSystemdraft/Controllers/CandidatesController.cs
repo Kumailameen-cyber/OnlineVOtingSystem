@@ -189,6 +189,11 @@ namespace VOtingSystemdraft.Controllers
             // Fetch candidate info for this user
             var candidate = _context.Candidates.FirstOrDefault(c => c.Id == userId);
 
+            ViewBag.LatestAnnouncements = _context.Announcements
+                .OrderByDescending(a => a.CreatedDate)
+                .Take(3)
+                .ToList();
+
             return View(candidate);  // pass model to the view
         }
 

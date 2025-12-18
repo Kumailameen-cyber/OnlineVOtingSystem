@@ -7,10 +7,13 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>@ViewData["Title"]</h2>
-        <div class="btn-group">
-            <a asp-controller="UserManagement" asp-action="Index" class="btn btn-outline-secondary">All</a>
-            <a asp-controller="UserManagement" asp-action="Voters" class="btn btn-outline-secondary">Voters</a>
-            <a asp-controller="UserManagement" asp-action="Candidates" class="btn btn-outline-secondary">Candidates</a>
+        <div class="d-flex align-items-center gap-2">
+            <div class="btn-group me-2">
+                <a asp-controller="UserManagement" asp-action="Index" class="btn btn-outline-secondary">All</a>
+                <a asp-controller="UserManagement" asp-action="Voters" class="btn btn-outline-secondary">Voters</a>
+                <a asp-controller="UserManagement" asp-action="Candidates" class="btn btn-outline-secondary">Candidates</a>
+            </div>
+            <a asp-controller="Admins" asp-action="AdminDashboard" class="btn btn-secondary">Back to Dashboard</a>
         </div>
     </div>
 

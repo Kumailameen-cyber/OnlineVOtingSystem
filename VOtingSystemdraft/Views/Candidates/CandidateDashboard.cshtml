@@ -70,7 +70,30 @@
             </a>
         </div>
 
-       
+    </div>
+
+<div class="dashboard-container" style="margin-top:20px;">
+    <h2>Latest News</h2>
+    <div>
+        @{
+            var latest = ViewBag.LatestAnnouncements as IEnumerable<VOtingSystemdraft.Models.Announcement>;
+            latest = latest ?? Enumerable.Empty<VOtingSystemdraft.Models.Announcement>();
+        }
+        @foreach (var a in latest)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">@a.Title</h5>
+                    <p class="text-muted">@a.CreatedDate.ToString("g")</p>
+                    <p>@a.Description</p>
+                </div>
+            </div>
+        }
+        @if (!latest.Any())
+        {
+            <div class="alert alert-info">No recent announcements.</div>
+        }
+        <a asp-controller="Announcements" asp-action="Index" class="btn btn-outline-primary">View All Announcements</a>
     </div>
 
 

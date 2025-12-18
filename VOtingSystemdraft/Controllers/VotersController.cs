@@ -188,6 +188,8 @@ namespace VOtingSystemdraft.Controllers
 
             var voter = _context.Voters.FirstOrDefault(v => v.Id == userId);
             ViewBag.LatestAnnouncements = _context.Announcements
+                .Include(a => a.Admin)
+                .ThenInclude(ad => ad.User)
                 .OrderByDescending(a => a.CreatedDate)
                 .Take(5)
                 .ToList();

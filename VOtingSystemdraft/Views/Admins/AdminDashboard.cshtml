@@ -95,12 +95,91 @@
 <div class="dashboard-container">
     <h1>Admin Dashboard</h1>
 
-    <div class="dashboard-buttons">
-        <a asp-controller="UserManagement" asp-action="Index" class="dashboard-button-style">Manage Users</a>
-        <a asp-controller="Elections" asp-action="Index" class="dashboard-button-style">Manage Elections</a>
-        <a asp-controller="Announcements" asp-action="Index" class="dashboard-button-style">Manage Announcements</a>
-        <a asp-controller="Reports" asp-action="Index" class="dashboard-button-style">Reports & Analytics</a>
-        
+    <div class="row mt-2">
+        <div class="col-12 col-md-6 col-lg-3 mb-3">
+            <a asp-controller="UserManagement" asp-action="Index" class="card shadow-sm rounded-3 h-100 text-decoration-none">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-people fs-3 text-primary me-3"></i>
+                    <div>
+                        <div class="fw-semibold">Manage Users</div>
+                        <small class="text-muted">Create, edit, assign roles</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3">
+            <a asp-controller="Elections" asp-action="Index" class="card shadow-sm rounded-3 h-100 text-decoration-none">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-calendar2-check fs-3 text-primary me-3"></i>
+                    <div>
+                        <div class="fw-semibold">Manage Elections</div>
+                        <small class="text-muted">Create schedules and configure</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3">
+            <a asp-controller="Announcements" asp-action="Index" class="card shadow-sm rounded-3 h-100 text-decoration-none">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-megaphone fs-3 text-primary me-3"></i>
+                    <div>
+                        <div class="fw-semibold">Manage Announcements</div>
+                        <small class="text-muted">Publish and update news</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3">
+            <a asp-controller="Reports" asp-action="Index" class="card shadow-sm rounded-3 h-100 text-decoration-none">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-graph-up fs-3 text-primary me-3"></i>
+                    <div>
+                        <div class="fw-semibold">Reports & Analytics</div>
+                        <small class="text-muted">Insights and dashboards</small>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
 
+</div>
+
+<div class="dashboard-container" style="margin-top:20px;">
+    <h2>Latest Announcements</h2>
+    @{
+        var latest = ViewBag.LatestAnnouncements as IEnumerable<VOtingSystemdraft.Models.Announcement>;
+        latest = latest ?? Enumerable.Empty<VOtingSystemdraft.Models.Announcement>();
+    }
+    @foreach (var a in latest)
+    {
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="card-title mb-1">@a.Title</h5>
+                        <div class="text-muted small">
+                            @a.CreatedDate.ToString("g")
+                            @if (a.Admin?.User != null)
+                            {
+                                @: • by @a.Admin.User.Username
+                            }
+                        </div>
+                    </div>
+                    @if ((DateTime.Now - a.CreatedDate).TotalHours < 72)
+                    {
+                        <span class="badge bg-success">New</span>
+                    }
+                </div>
+                <p class="card-text mt-2">@((a.Description?.Length ?? 0) > 240 ? a.Description.Substring(0,240) + "…" : a.Description)</p>
+                <a asp-controller="Announcements" asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                <a asp-controller="Announcements" asp-action="Edit" asp-route-id="@a.Id" class="btn btn-sm btn-outline-secondary ms-2">Edit</a>
+                <a asp-controller="Announcements" asp-action="Delete" asp-route-id="@a.Id" class="btn btn-sm btn-outline-danger ms-2">Delete</a>
+            </div>
+        </div>
+    }
+    @if (!latest.Any())
+    {
+        <div class="alert alert-info">No recent announcements.</div>
+    }
+    <a asp-controller="Announcements" asp-action="Index" class="btn btn-outline-primary">Manage All Announcements</a>
 </div>

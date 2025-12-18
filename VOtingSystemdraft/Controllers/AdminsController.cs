@@ -163,7 +163,12 @@ namespace VOtingSystemdraft.Controllers
         }
         public IActionResult AdminDashboard()
         {
-            // Authorization handled by [Authorize(Roles = "Admin")]
+            ViewBag.LatestAnnouncements = _context.Announcements
+                .Include(a => a.Admin)
+                .ThenInclude(ad => ad.User)
+                .OrderByDescending(a => a.CreatedDate)
+                .Take(5)
+                .ToList();
             return View();
         }
     }
